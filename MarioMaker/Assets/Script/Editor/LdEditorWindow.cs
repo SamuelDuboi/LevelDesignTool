@@ -61,8 +61,7 @@ namespace TileTool{
         private List<Rect> rectToDraw = new List<Rect>();
 
         //stock ever tile type to be able to draw them 
-        private List <int> indexToDraw = new List<int>(); 
-
+        private List <int> indexToDraw = new List<int>();
 
         //every texture use to draw the editor window
         public Texture2D background, inspectorText, warningText, warningBorderText, selectText, inspectorBox, inspectorBoxSelected, erasertext;
@@ -360,7 +359,7 @@ namespace TileTool{
                             {
                                 if (!rectToDraw.Contains(currentRect))
                                 {
-                                    ld.ChangeTileType(x, y, ld.newTiles[currentCustomTileIndex]);
+                                    ld.ChangeTileType(x, y, ld.newTiles[currentCustomTileIndex],rectToDraw,indexToDraw,currentCustomTileIndex) ;
                                     rectToDraw.Add(currentRect);
                                     indexToDraw.Add(currentCustomTileIndex);
                                 }
@@ -368,7 +367,7 @@ namespace TileTool{
                                 {
                                     int index = rectToDraw.IndexOf(currentRect);
 
-                                    if (ld.ChangeTileType(x, y, ld.newTiles[currentCustomTileIndex]))
+                                    if (ld.ChangeTileType(x, y, ld.newTiles[currentCustomTileIndex], rectToDraw, indexToDraw, index))
                                     {
                                         indexToDraw[index] = currentCustomTileIndex;
                                     }
@@ -381,8 +380,8 @@ namespace TileTool{
                             }
                             else
                             {
-                                ld.ChangeTileType(x, y, ld.newTiles[0], true);
                                 int index = rectToDraw.IndexOf(currentRect);
+                                ld.ChangeTileType(x, y, ld.newTiles[0], rectToDraw, indexToDraw, index,true);
                                 if(index != -1)
                                 {
                                     rectToDraw.RemoveAt(index);
@@ -429,7 +428,7 @@ namespace TileTool{
 
                             if (currentCustomTileIndex < ld.newTiles.Count)
                             {
-                                ld.ChangeTileType(x, y, ld.newTiles[currentCustomTileIndex], true);
+                                ld.ChangeTileType(x, y, ld.newTiles[currentCustomTileIndex], rectToDraw, indexToDraw, currentCustomTileIndex, true);
                                 if (!rectToDraw.Contains(currentRect))
                                 {
                                     rectToDraw.Add(currentRect);
@@ -445,8 +444,8 @@ namespace TileTool{
                             }
                             else
                             {
-                                ld.ChangeTileType(x, y, ld.newTiles[0],false, true);
                                 int index = rectToDraw.IndexOf(currentRect);
+                                ld.ChangeTileType(x, y, ld.newTiles[0], rectToDraw, indexToDraw, index, false, true);
                                 if(index != -1)
                                 {
                                     rectToDraw.RemoveAt(index);
@@ -468,7 +467,13 @@ namespace TileTool{
         {
             for (int i = 0; i < rectToDraw.Count; i++)
             {
-                GUI.DrawTexture(rectToDraw[i], ld.newTiles[indexToDraw[i]].texture, ScaleMode.ScaleToFit);
+                int xOfTile = (int)rectToDraw[i].x / 64 + 1;
+                int yOfTile = (int)rectToDraw[i].y / 64 + 1;
+                if(!ld.tiles[yOfTile * 48 * (ld.screenNumber + 1) + xOfTile].isTileUnder)
+                    GUI.DrawTexture(rectToDraw[i], ld.newTiles[indexToDraw[i]].texture, ScaleMode.ScaleToFit);
+                else
+                    GUI.DrawTexture(rectToDraw[i], ld.newTiles[indexToDraw[i]].textureUnder, ScaleMode.ScaleToFit);
+
             } 
         }
 

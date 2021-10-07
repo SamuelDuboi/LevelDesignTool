@@ -13,5 +13,7 @@ MonoBehaviour:
   m_Name: Pipe
   m_EditorClassIdentifier: 
   texture: {fileID: 2800000, guid: 391f89d4e9c69694c8e29126b4ad624a, type: 3}
+  textureUnder: {fileID: 2800000, guid: 3a09b54ee4df88a4889a5b094d9215d6, type: 3}
   shortCut: 112
   hasCollider: 1
+  hasUnderSprite: 1
