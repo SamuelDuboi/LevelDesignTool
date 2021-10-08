@@ -362,6 +362,7 @@ namespace TileTool{
                                     ld.ChangeTileType(x, y, ld.newTiles[currentCustomTileIndex],rectToDraw,indexToDraw,currentCustomTileIndex) ;
                                     rectToDraw.Add(currentRect);
                                     indexToDraw.Add(currentCustomTileIndex);
+                                    InitialiseLD();
                                 }
                                 else
                                 {
@@ -370,25 +371,31 @@ namespace TileTool{
                                     if (ld.ChangeTileType(x, y, ld.newTiles[currentCustomTileIndex], rectToDraw, indexToDraw, index))
                                     {
                                         indexToDraw[index] = currentCustomTileIndex;
+                                        
+
                                     }
                                     else
                                     {
                                         rectToDraw.RemoveAt(index);
                                         indexToDraw.RemoveAt(index);
                                     }
+                                    InitialiseLD();
                                 }
                             }
                             else
                             {
                                 int index = rectToDraw.IndexOf(currentRect);
-                                ld.ChangeTileType(x, y, ld.newTiles[0], rectToDraw, indexToDraw, index,true);
+                                ld.ChangeTileType(x, y, ld.newTiles[0], rectToDraw, indexToDraw, index,false,true);
+
                                 if(index != -1)
                                 {
                                     rectToDraw.RemoveAt(index);
                                     indexToDraw.RemoveAt(index);
-                                }                            
+                                }    
+                                    InitialiseLD();
+
                             }
-                      
+
 
                             #endregion
                         }
@@ -439,7 +446,8 @@ namespace TileTool{
                                     int index = rectToDraw.IndexOf(currentRect);
                                     indexToDraw[index] = currentCustomTileIndex;
                                 }
-                               
+
+                                InitialiseLD();
 
                             }
                             else
@@ -451,6 +459,8 @@ namespace TileTool{
                                     rectToDraw.RemoveAt(index);
                                     indexToDraw.RemoveAt(index);
                                 }
+                                    InitialiseLD();
+
                             }
                         }
                     }
@@ -472,7 +482,9 @@ namespace TileTool{
                 if(!ld.tiles[yOfTile * 48 * (ld.screenNumber + 1) + xOfTile].isTileUnder)
                     GUI.DrawTexture(rectToDraw[i], ld.newTiles[indexToDraw[i]].texture, ScaleMode.ScaleToFit);
                 else
+                {
                     GUI.DrawTexture(rectToDraw[i], ld.newTiles[indexToDraw[i]].textureUnder, ScaleMode.ScaleToFit);
+                }
 
             } 
         }

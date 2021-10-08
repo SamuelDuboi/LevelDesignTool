@@ -73,7 +73,7 @@ namespace TileTool
         /// <param name="x"></param>
         /// <param name="y"></param>
 
-        public bool ChangeTileType(int x, int y, CustomeTile tile, List<Rect> rectToDraw, List<int> indexToDraw, int index,bool isSelection = false, bool erase = false)
+        public bool ChangeTileType(int x, int y, CustomeTile tile, List<Rect> rectToDraw, List<int> indexToDraw, int index, bool isSelection = false, bool erase = false)
         {
             if (!isSelection)
             {
@@ -81,140 +81,139 @@ namespace TileTool
                 {
                     if (tiles[y * 48 * (screenNumber + 1) + x].tileType != tile)
                     {
-                        CustomeTile _oldTile = tiles[y * 48 * (screenNumber + 1) + x].tileType;
                         tiles[y * 48 * (screenNumber + 1) + x].tileType = tile;
-                        tiles[y * 48 * (screenNumber + 1) + x].isTileUnder =false;
-
-                        #region tile under
-                        //if there is a tile above
-                        if ((y-1) * 48 * (screenNumber + 1) + x< tiles.Length-1) 
-                        {
-                            //if the tile above is suppose to have a tile under him
-                           if(tiles[(y - 1) * 48 * (screenNumber + 1) + x].tileType!= null && tiles[(y-1) * 48 * (screenNumber + 1) + x].tileType.hasUnderSprite)
-                            {
-                                //if they are the same tile type
-                                if (tiles[(y - 1) * 48 * (screenNumber + 1) + x].tileType == tile)
-                                {
-                                    for (int i = y+1; i * 48 * (screenNumber + 1) + x < tiles.Length; i++)
-                                    {
-                                        //while the tile under has nothing in it
-                                        if(tiles[i * 48 * (screenNumber + 1) + x].tileType != null)
-                                        {
-                                            tiles[i * 48 * (screenNumber + 1) + x].tileType = tile;
-                                            tiles[i * 48 * (screenNumber + 1) + x].tileType.hasUnderSprite = tile;
-                                            if (i != y)
-                                            {
-                                                var currentRect = (new Rect((x - 1) * 64, (i - 1) * 64, 64, 64));
-                                                tiles[i * 48 * (screenNumber + 1) + x].isTileUnder = true;
-                                                if (rectToDraw.Contains(currentRect))
-                                                {
-                                                    indexToDraw[rectToDraw.IndexOf(currentRect)] = index;
-                                                }
-                                                else
-                                                {
-                                                    rectToDraw.Add(currentRect);
-                                                    indexToDraw.Add(index);
-                                                }
-                                            }
-                                            else
-                                            {
-                                                Debug.Log("isFirstTile");
-                                                tiles[i * 48 * (screenNumber + 1) + x].isTileUnder = false;
-                                                var currentRect = (new Rect((x - 1) * 64, (i - 1) * 64, 64, 64));
-                                                indexToDraw.Remove(rectToDraw.IndexOf(currentRect));
-                                                rectToDraw.Remove(currentRect);
-
-                                            }
-                                        }
-                                        else
-                                        {
-                                            break;
-                                        }
-                                    }
-                                }
-                                //if they are not the same type, delete all the previus cutome tile
-                                else
-                                {
-                                   CustomeTile _aboveTile = tiles[(y - 1) * 48 * (screenNumber + 1) + x].tileType;
-                                    //while there is a tile above with the same tile type delete this type
-                                    for (float i = y+1; i * 48 * (screenNumber + 1) + x > 0; i--)
-                                    {
-                                        if(tiles[(int)(i * 48 * (screenNumber + 1) + x)].tileType == _aboveTile)
-                                        {
-                                            tiles[(int)(i * 48 * (screenNumber + 1) + x)].tileType =  null;
-                                            var currentRect = (new Rect((x - 1) * 64, (i - 1) * 64, 64, 64));
-                                            indexToDraw.Remove(rectToDraw.IndexOf(currentRect));
-                                            rectToDraw.Remove(currentRect);
-                                        }
-                                        else
-                                        {
-                                            break;
-                                        }
-                                    }
-                                }
-                            }
-                           //if there is nothing abov draw 
-                            else if(tile.hasUnderSprite)
-                            {
-                                
-                                for (int i = y+1; i * 48 * (screenNumber + 1) + x < tiles.Length; i++)
-                                {
-                                    //while the tile under has nothing in it
-                                    if (tiles[i * 48 * (screenNumber + 1) + x].tileType == null || tiles[i * 48 * (screenNumber + 1) + x].tileType == _oldTile)
-                                    {
-                                        var currentRect = (new Rect((x - 1) * 64, (i - 1) * 64, 64, 64));                                        
-                                        tiles[i * 48 * (screenNumber + 1) + x].tileType = tile;
-                                        tiles[i * 48 * (screenNumber + 1) + x].tileType.hasUnderSprite = tile;
-                                        Debug.Log(rectToDraw.IndexOf(currentRect));
-                                        Debug.Log(index);
-                                        if (rectToDraw.Contains(currentRect))
-                                        {
-                                            indexToDraw[rectToDraw.IndexOf(currentRect)] = index;
-                                        }
-                                        else
-                                        {
-                                            rectToDraw.Add(currentRect);
-                                            indexToDraw.Add(index);
-                                        }
-                                        if (i != y)
-                                        {
-                                            tiles[i * 48 * (screenNumber + 1) + x].isTileUnder = true;
-                                        }                                       
-
-                                    }
-                                    else
-                                    {
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                        #endregion
+                        tiles[y * 48 * (screenNumber + 1) + x].isTileUnder = false;
+                        TryTileUnder(x, y, tile, rectToDraw, indexToDraw, index, isSelection, erase);
                         return true;
                     }
                     else
                     {
                         tiles[y * 48 * (screenNumber + 1) + x].tileType = null;
+                        tiles[y * 48 * (screenNumber + 1) + x].isTileUnder = false;
+                        if (tile.hasUnderSprite)
+                            tiles[(y + 1) * 48 * (screenNumber + 1) + x].isTileUnder = false;
+                        for (int i = y - 1; i * 48 * (screenNumber + 1) + x > 0; i--)
+                        {
+                            if (tiles[i * 48 * (screenNumber + 1) + x].tileType == tile)
+                            {
+                                tiles[i * 48 * (screenNumber + 1) + x].tileType = null;
+                                tiles[i * 48 * (screenNumber + 1) + x].isTileUnder = false;
+
+                            }
+                        }
                         return false;
                     }
 
                 }
                 else
                 {
+
+                    CustomeTile _oldTileTipe = tiles[y * 48 * (screenNumber + 1) + x].tileType;
                     tiles[y * 48 * (screenNumber + 1) + x].tileType = null;
+                    tiles[y * 48 * (screenNumber + 1) + x].isTileUnder = false;
+                    if (tiles[(y + 1) * 48 * (screenNumber + 1) + x].isTileUnder)
+                        tiles[(y +1)* 48 * (screenNumber + 1) + x].isTileUnder = false;
+
+
+                    for(int i = y - 1; i * 48 * (screenNumber + 1) + x > 0; i--)
+                        {
+                        if (tiles[i * 48 * (screenNumber + 1) + x].tileType == _oldTileTipe)
+                        {
+                            tiles[i * 48 * (screenNumber + 1) + x].tileType = null;
+                            tiles[i * 48 * (screenNumber + 1) + x].isTileUnder = false;
+
+                        }
+                    }
                     return false;
                 }
             }
             else
             {
+
                 tiles[y * 48 * (screenNumber + 1) + x].tileType = tile;
+                tiles[y * 48 * (screenNumber + 1) + x].isTileUnder = false;
+
+                TryTileUnder(x, y, tile, rectToDraw, indexToDraw, index, isSelection, erase);
                 return true;
+
             }
-
-
 
         }
 
+
+        public void TryTileUnder(int x, int y, CustomeTile tile, List<Rect> rectToDraw, List<int> indexToDraw, int index, bool isSelection = false, bool erase = false)
+        {
+            //if there is a tile above
+            tiles[(y + 1) * 48 * (screenNumber + 1) + x].isTileUnder = false;
+            if ((y - 1) * 48 * (screenNumber + 1) + x < tiles.Length - 1)
+            {
+                //if the tile above is suppose to have a tile under him
+                if (tiles[(y - 1) * 48 * (screenNumber + 1) + x].tileType != null && tiles[(y - 1) * 48 * (screenNumber + 1) + x].tileType.hasUnderSprite)
+                {
+                    //if they are the same tile type
+                    if (tiles[(y - 1) * 48 * (screenNumber + 1) + x].tileType == tile)
+                    {
+                        for (int i = y; i * 48 * (screenNumber + 1) + x < tiles.Length; i++)
+                        {
+                            //while the tile under has nothing in it
+                            if (tiles[i * 48 * (screenNumber + 1) + x].tileType == null || tiles[i * 48 * (screenNumber + 1) + x].tileType == tile)
+                            {
+                                tiles[i * 48 * (screenNumber + 1) + x].tileType = tile;
+                                tiles[i * 48 * (screenNumber + 1) + x].tileType.hasUnderSprite = tile;
+                                tiles[i * 48 * (screenNumber + 1) + x].isTileUnder = true;
+
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
+                    }
+                    //if they are not the same type, delete all the previus cutome tile
+                    else
+                    {
+                        CustomeTile _aboveTile = tiles[(y - 1) * 48 * (screenNumber + 1) + x].tileType;
+                        //while there is a tile above with the same tile type delete this type
+                        for (float i = y + 1; i * 48 * (screenNumber + 1) + x < tiles.Length; i++)
+                        {
+                            if (tiles[(int)(i * 48 * (screenNumber + 1) + x)].tileType == _aboveTile)
+                            {
+                                tiles[(int)(i * 48 * (screenNumber + 1) + x)].tileType = null;
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            if (tile.hasUnderSprite)
+            {
+                CustomeTile _oldTile = tiles[y * 48 * (screenNumber + 1) + x].tileType;
+
+                for (int i = y + 1; i * 48 * (screenNumber + 1) + x < tiles.Length; i++)
+                {
+                    //while the tile under has nothing in it
+                    if (tiles[i * 48 * (screenNumber + 1) + x].tileType == null || tiles[i * 48 * (screenNumber + 1) + x].tileType == _oldTile || tiles[i * 48 * (screenNumber + 1) + x].tileType == tile)
+                    {
+                        var currentRect = (new Rect((x - 1) * 64, (i - 1) * 64, 64, 64));
+                        tiles[i * 48 * (screenNumber + 1) + x].tileType = tile;
+                        tiles[i * 48 * (screenNumber + 1) + x].tileType.hasUnderSprite = tile;
+
+                        if (i != y)
+                        {
+                            tiles[i * 48 * (screenNumber + 1) + x].isTileUnder = true;
+                        }
+
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+            }
+        }
         /// <summary>
         /// add custom tiles to this ld
         /// </summary>

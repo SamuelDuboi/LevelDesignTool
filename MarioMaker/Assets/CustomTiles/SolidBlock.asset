@@ -13,5 +13,7 @@ MonoBehaviour:
   m_Name: SolidBlock
   m_EditorClassIdentifier: 
   texture: {fileID: 2800000, guid: 4a93dcb4ba269fa48b50c8a0b0d4884d, type: 3}
+  textureUnder: {fileID: 0}
   shortCut: 115
   hasCollider: 1
+  hasUnderSprite: 0
